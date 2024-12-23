@@ -2,7 +2,7 @@
   <div class="tab-bar">
     <router-link to="/collector" class="tab-item">
       <div class="icon">📡</div>
-      <div class="text">698集中器</div>
+      <div class="text">集中器</div>
     </router-link>
     <router-link to="/version" class="tab-item">
       <div class="icon">ℹ️</div>
