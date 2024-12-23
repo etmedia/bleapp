@@ -1,25 +1,25 @@
 <template>
   <div class="collector">
     <div class="button-list">
-      <div class="button-item" @click="router.push('/collector/query')">
+      <div class="button-item" @click="navigateTo('/collector/query')">
         <div class="button">
           <span class="number">1</span>
           <span class="text">查询参数</span>
         </div>
       </div>
-      <div class="button-item" @click="router.push('/collector/setting')">
+      <div class="button-item" @click="navigateTo('/collector/setting')">
         <div class="button">
           <span class="number">2</span>
           <span class="text">设置参数</span>
         </div>
       </div>
-      <div class="button-item" @click="router.push('/collector/init')">
+      <div class="button-item" @click="navigateTo('/collector/init')">
         <div class="button">
           <span class="number">3</span>
           <span class="text">初始化</span>
         </div>
       </div>
-      <div class="button-item" @click="router.push('/collector/meter')">
+      <div class="button-item" @click="navigateTo('/collector/meter')">
         <div class="button">
           <span class="number">4</span>
           <span class="text">电能表参数</span>
@@ -29,10 +29,14 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+
+const navigateTo = (pathstr :string) => {
+  router.push({ path: pathstr })
+}
 </script>
 
 <style scoped>

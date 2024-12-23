@@ -8,7 +8,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import TabBar from '@/components/TabBar.vue'
 import NavBar from '@/components/NavBar.vue'
 </script>
