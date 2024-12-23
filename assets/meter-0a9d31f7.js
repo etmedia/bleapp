@@ -1,0 +1,1 @@
+import{_ as t,o as _,c as s,a as o}from"./index-ec02ec43.js";const a={class:"meter"},r={__name:"meter",setup(c){return(n,e)=>(_(),s("div",a,e[0]||(e[0]=[o("h3",null,"电能表参数",-1)])))}},l=t(r,[["__scopeId","data-v-972b1525"]]);export{l as default};
