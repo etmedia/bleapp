@@ -1,0 +1,1 @@
+import{d as t,c as _,a as s,o as n,_ as o}from"./index-25d40002.js";const a={class:"init"},i=t({__name:"init",setup(c){return(d,e)=>(n(),_("div",a,e[0]||(e[0]=[s("h3",null,"初始化",-1)])))}});const r=o(i,[["__scopeId","data-v-77b078de"]]);export{r as default};
