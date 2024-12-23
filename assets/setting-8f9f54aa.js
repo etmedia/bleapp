@@ -1,0 +1,1 @@
+import{_ as t,o as s,c as _,a}from"./index-ff43d2c5.js";const c={class:"setting"},n={__name:"setting",setup(o){return(r,e)=>(s(),_("div",c,e[0]||(e[0]=[a("h3",null,"设置参数",-1)])))}},i=t(n,[["__scopeId","data-v-a60cc60a"]]);export{i as default};
