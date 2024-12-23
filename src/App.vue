@@ -24,6 +24,8 @@ import NavBar from '@/components/NavBar.vue'
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .main-content {

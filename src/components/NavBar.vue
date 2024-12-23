@@ -11,7 +11,7 @@
     </div>
     <div class="title">
       <template v-if="isSubPage">
-        <span class="parent-title">698集中器</span>
+        <span class="parent-title">集中器</span>
         <span class="separator">-</span>
       </template>
       <span class="current-title">{{ title }}</span>
@@ -49,7 +49,7 @@ const isSubPage = computed(() => {
 const title = computed(() => {
   switch (route.path) {
     case '/collector':
-      return '698集中器'
+      return '集中器'
     case '/collector/query':
       return '查询参数'
     case '/collector/setting':
