@@ -1,1 +1,0 @@
-import{d as e,c as _,o as s,_ as n}from"./index-25d40002.js";const o={class:"version"},t=e({__name:"index",setup(c){return(a,d)=>(s(),_("div",o))}});const r=n(t,[["__scopeId","data-v-b0dae57c"]]);export{r as default};
