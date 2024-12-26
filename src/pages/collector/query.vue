@@ -7,38 +7,44 @@
           <span class="text">查询终端地址</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('ip')">
-        <div class="button">
+      <div class="button-item"> 
+        <!-- @click="handleQuery('ip')" -->
+        <div class="button disabled">
           <span class="number">2</span>
           <span class="text">查询终端IP</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('ethernetMaster')">
-        <div class="button">
+      <div class="button-item" >
+      <!-- @click="handleQuery('ethernetMaster')" -->
+        <div class="button disabled">
           <span class="number">3</span>
           <span class="text">查询以太网主站参数</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('ethernetComm')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="handleQuery('ethernetComm')" -->
+        <div class="button disabled">
           <span class="number">4</span>
           <span class="text">查询以太网通信设置</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('gprsMaster')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="handleQuery('gprsMaster')" -->
+        <div class="button disabled">
           <span class="number">5</span>
           <span class="text">查询GPRS主站参数</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('gprsComm')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="handleQuery('gprsComm')" -->
+        <div class="button disabled">
           <span class="number">6</span>
           <span class="text">查询GPRS通信参数</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('time')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="handleQuery('time')" -->
+        <div class="button disabled">
           <span class="number">7</span>
           <span class="text">查询终端时间</span>
         </div>
@@ -49,8 +55,9 @@
           <span class="text">查询终端版本信息</span>
         </div>
       </div>
-      <div class="button-item" @click="handleQuery('mac')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="handleQuery('mac')" -->
+        <div class="button disabled">
           <span class="number">9</span>
           <span class="text">查询终端MAC地址</span>
         </div>
@@ -120,5 +127,10 @@ const handleQuery = (type) => {
 .button:active {
   transform: scale(0.98);
   background-color: #3a8ee6;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 </style> 

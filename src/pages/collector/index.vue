@@ -7,20 +7,23 @@
           <span class="text">查询参数</span>
         </div>
       </div>
-      <div class="button-item" @click="navigateTo('/collector/setting')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="navigateTo('/collector/setting')" -->
+        <div class="button  disabled">
           <span class="number">2</span>
           <span class="text">设置参数</span>
         </div>
       </div>
-      <div class="button-item" @click="navigateTo('/collector/init')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="navigateTo('/collector/init')" -->
+        <div class="button  disabled">
           <span class="number">3</span>
           <span class="text">初始化</span>
         </div>
       </div>
-      <div class="button-item" @click="navigateTo('/collector/meter')">
-        <div class="button">
+      <div class="button-item">
+        <!-- @click="navigateTo('/collector/meter')" -->
+        <div class="button  disabled">
           <span class="number">4</span>
           <span class="text">电能表参数</span>
         </div>
@@ -90,5 +93,10 @@ const navigateTo = (pathstr :string) => {
 .button:active {
   transform: scale(0.98);
   background-color: #3a8ee6;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
 }
 </style> 

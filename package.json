@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "buffer": "^6.0.3",
+    "ts698": "^1.1.1",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
   },
@@ -20,6 +22,7 @@
     "@vitejs/plugin-vue-jsx": "^4.1.1",
     "@vue/compiler-sfc": "^3.2.45",
     "typescript": "^5.7.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.5",
+    "vite-plugin-node-polyfills": "^0.22.0"
   }
 }

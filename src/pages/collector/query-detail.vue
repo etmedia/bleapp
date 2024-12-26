@@ -1,6 +1,6 @@
 <template>
   <div class="query-detail">
-    <div class="page-title">{{ pageTitle }}</div>
+    <div class="page-title">{{ pageTitle }} {{ global.termaddress }}</div>
     <div class="content-box">
       <div class="result-area">
         <textarea 
@@ -16,7 +16,7 @@
         <div class="message-area" :class="{ error: hasError }">
           {{ message }}
         </div>
-        <button class="query-btn" @click="handleQuery">查询</button>
+        <button class="query-btn" @click="handleQuery" :disabled="!isStarted">查询</button>
       </div>
       
       <div class="log-section">
@@ -40,10 +40,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick, inject } from 'vue'
 import { useRoute } from 'vue-router'
-import { globalObject, Callback, bufferToHexString, getErrorMessage } from '@/global'
+import { globalObject, Callback, getErrorMessage, makePayload } from '@/global'
+import { buildFrame, parseFrame }  from '@/698frame'
 
 const global = inject<typeof globalObject>('globalObject', globalObject)
 
+const isStarted = ref(global.isStarted)
 const route = useRoute()
 const queryResult = ref(global.returnData)
 const logs = ref('')
@@ -52,41 +54,29 @@ const message = ref('')
 const hasError = ref(false)
 
 const pageTitle = computed(() => {
-  switch (route.params.type) {
-    case 'address':
-      return '查询终端地址'
-    case 'ip':
-      return '查询终端IP'
-    case 'ethernetMaster':
-      return '查询以太网主站参数'
-    case 'ethernetComm':
-      return '查询以太网通信设置'
-    case 'gprsMaster':
-      return '查询GPRS主站参数'
-    case 'gprsComm':
-      return '查询GPRS通信参数'
-    case 'time':
-      return '查询终端时间'
-    case 'version':
-      return '查询终端版本信息'
-    case 'mac':
-      return '查询终端MAC地址'
-    default:
-      return '查询'
-  }
+    switch (route.params.type) {
+        case 'address':
+        return '查询终端地址'
+        case 'ip':
+        return '查询终端IP'
+        case 'ethernetMaster':
+        return '查询以太网主站参数'
+        case 'ethernetComm':
+        return '查询以太网通信设置'
+        case 'gprsMaster':
+        return '查询GPRS主站参数'
+        case 'gprsComm':
+        return '查询GPRS通信参数'
+        case 'time':
+        return '查询终端时间'
+        case 'version':
+        return '查询终端版本信息'
+        case 'mac':
+        return '查询终端MAC地址'
+        default:
+        return '查询'
+    }
 })
-
-const checkFrame = (frame: Uint8Array) => {
-    if (frame[0] != 0x68 || frame[frame.length-1] != 0x16 || frame.length != 35) {
-        hasError.value = true
-        message.value = '返回帧错误'
-        return false
-    }
-    else
-    {
-        return true
-    }
-}
 
 const callback: Callback = (err, result) => {
     if (err)
@@ -100,34 +90,37 @@ const callback: Callback = (err, result) => {
         console.log('结果:', result);
         const timestamp = new Date().toLocaleTimeString()
         logs.value = `[${timestamp}] RX:`+ result + '\n' + logs.value
-        if(route.params.type == 'address')
+        const action = Array.isArray(route.params.type) ? route.params.type[0] : route.params.type;
+        let ret = parseFrame(action, result)
+        if(action == 'address')
         {
-            if(checkFrame(global.makePayload(result)))
-            {
-
-                //获取result[48-60]子串
-                queryResult.value = result.slice(48, 60)
-            }            
+            global.termaddress.value = ret.valueOf()
         }
-        
+        queryResult.value = ret.valueOf()
     }        
 };
 
 const handleQuery = () => {
+    const action = Array.isArray(route.params.type) ? route.params.type[0] : route.params.type;
+    if(action !== 'address' && global.termaddress.value === '')
+    {
+        message.value = '请先查询终端地址'
+        return
+    }
     const timestamp = new Date().toLocaleTimeString()
     try {
         queryResult.value = ''
-        const cmdstr = "68 17 00 43 45 AA AA AA AA AA AA 00 5B 4F 05 01 05 40 01 02 00 00 6A 17 16"
-        const cmd = global.makePayload(cmdstr)
+        // const cmdstr = "68 17 00 43 45 AA AA AA AA AA AA 00 5B 4F 05 01 05 40 01 02 00 00 6A 17 16"
+        const cmd = buildFrame(action, global.termaddress.value)
         // 模拟查询操作
-        global.send(cmd, callback)
-        logs.value = `[${timestamp}] TX:`+ bufferToHexString(cmd) + '\n' + logs.value
+        global.send(makePayload(cmd), callback)
+        logs.value = `[${timestamp}] TX:`+ cmd + '\n' + logs.value
         message.value = ''
         hasError.value = false
     } catch (error) {
-        message.value = '查询失败：' + getErrorMessage(error)
+        message.value = '发送查询失败：' + getErrorMessage(error)
         hasError.value = true
-        logs.value = `[${timestamp}] 查询失败: ${getErrorMessage(error)}\n` + logs.value
+        logs.value = `[${timestamp}] 发送查询失败: ${getErrorMessage(error)}\n` + logs.value
     }
 }
 
@@ -158,6 +151,7 @@ watch(queryResult, () => {
 onMounted(() => {
   console.log('查询类型:', route.params.type)
   adjustTextareaHeight()
+  global.returnData.value = ''
 })
 </script>
 
@@ -242,6 +236,12 @@ onMounted(() => {
 
 .query-btn:active {
   background-color: #3a8ee6;
+}
+
+.query-btn:disabled {
+  background-color: gray;
+  color: darkgray;
+  cursor: not-allowed;
 }
 
 .log-section {

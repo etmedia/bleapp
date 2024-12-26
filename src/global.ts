@@ -34,6 +34,17 @@ function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
     }
 }
 
+export function makePayload (datastr: String) {
+    const text = datastr
+    const cleanedText = text.replace(/\s+/g, '')
+    const uint8Array = new Uint8Array(cleanedText.length / 2)
+    for (let i = 0; i < cleanedText.length; i += 2) {
+        uint8Array[i / 2] = parseInt(cleanedText.substr(i, 2), 16)
+    }
+    return uint8Array
+}
+
+
 export function getErrorMessage(error: unknown) {
     return toErrorWithMessage(error).message
 }
@@ -46,6 +57,7 @@ export const globalObject = {
     pendingStartEpilogue: 0, // workaround for determining new firmware, see handleRxdNotifications
     pendingTimeoutMessage: 0, // if we don't get a response in time, we should show an error message
     returnData: ref(''), // data returned from the device
+    termaddress: ref(''),
     handleData: null as Callback | null,
 
     handleRxdNotifications: (event: Event) => {
@@ -112,6 +124,9 @@ export const globalObject = {
             this.bluetoothDevice.gatt!.disconnect()
         }
         this.isStarted.value = false
+        this.connectedDeviceName.value = ''
+        this.returnData.value = ''
+        this.termaddress.value = ''
     },
 
     send: async function(payload: Uint8Array, callback: Callback) {
@@ -119,20 +134,11 @@ export const globalObject = {
         globalObject.returnData.value = ''
         if (this.Characteristic) {
             await this.Characteristic.writeValue(payload)
+            console.log("send", payload)
         }
     },
 
     updateUi: (status: string) => {
         console.log(`UI status: ${status}`);
     },
-    
-    makePayload: (datastr: string) => {
-        const text = datastr
-        const cleanedText = text.replace(/\s+/g, '')
-        const uint8Array = new Uint8Array(cleanedText.length / 2)
-        for (let i = 0; i < cleanedText.length; i += 2) {
-            uint8Array[i / 2] = parseInt(cleanedText.substr(i, 2), 16)
-        }
-        return uint8Array
-    }
 };
