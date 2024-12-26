@@ -1,1 +1,0 @@
-import{d as t,c as s,a as o,o as a,_ as r}from"./index-T2D_d14T.js";const n={class:"meter"},_=t({__name:"meter",setup(c){return(d,e)=>(a(),s("div",n,e[0]||(e[0]=[o("h3",null,"电能表参数",-1)])))}}),p=r(_,[["__scopeId","data-v-3bd88881"]]);export{p as default};
