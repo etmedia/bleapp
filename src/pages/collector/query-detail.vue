@@ -38,13 +38,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, inject } from 'vue'
 import { useRoute } from 'vue-router'
+import { globalObject, Callback, bufferToHexString, getErrorMessage } from '@/global'
+
+const global = inject<typeof globalObject>('globalObject', globalObject)
 
 const route = useRoute()
-const queryResult = ref('')
+const queryResult = ref(global.returnData)
 const logs = ref('')
-const resultTextarea = ref(null)
+const resultTextarea = ref<HTMLTextAreaElement | null>(null);
 const message = ref('')
 const hasError = ref(false)
 
@@ -73,19 +76,59 @@ const pageTitle = computed(() => {
   }
 })
 
+const checkFrame = (frame: Uint8Array) => {
+    if (frame[0] != 0x68 || frame[frame.length-1] != 0x16 || frame.length != 35) {
+        hasError.value = true
+        message.value = '返回帧错误'
+        return false
+    }
+    else
+    {
+        return true
+    }
+}
+
+const callback: Callback = (err, result) => {
+    if (err)
+    {
+        console.error(getErrorMessage(err))
+        message.value = '查询失败：' + getErrorMessage(err)
+        hasError.value = true
+    }
+    else
+    {
+        console.log('结果:', result);
+        const timestamp = new Date().toLocaleTimeString()
+        logs.value = `[${timestamp}] RX:`+ result + '\n' + logs.value
+        if(route.params.type == 'address')
+        {
+            if(checkFrame(global.makePayload(result)))
+            {
+
+                //获取result[48-60]子串
+                queryResult.value = result.slice(48, 60)
+            }            
+        }
+        
+    }        
+};
+
 const handleQuery = () => {
-  const timestamp = new Date().toLocaleTimeString()
-  try {
-    // 模拟查询操作
-    queryResult.value = '模拟查询结果'
-    logs.value += `[${timestamp}] 发起查询\n`
-    message.value = ''
-    hasError.value = false
-  } catch (error) {
-    message.value = '查询失败：' + error.message
-    hasError.value = true
-    logs.value += `[${timestamp}] 查询失败: ${error.message}\n`
-  }
+    const timestamp = new Date().toLocaleTimeString()
+    try {
+        queryResult.value = ''
+        const cmdstr = "68 17 00 43 45 AA AA AA AA AA AA 00 5B 4F 05 01 05 40 01 02 00 00 6A 17 16"
+        const cmd = global.makePayload(cmdstr)
+        // 模拟查询操作
+        global.send(cmd, callback)
+        logs.value = `[${timestamp}] TX:`+ bufferToHexString(cmd) + '\n' + logs.value
+        message.value = ''
+        hasError.value = false
+    } catch (error) {
+        message.value = '查询失败：' + getErrorMessage(error)
+        hasError.value = true
+        logs.value = `[${timestamp}] 查询失败: ${getErrorMessage(error)}\n` + logs.value
+    }
 }
 
 const clearLogs = () => {

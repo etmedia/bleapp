@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
-import { resolve } from 'path'
+import { resolve } from 'path';
 
 export default defineConfig({
   base: "./",
-  plugins: [vue(),vueJsx()],
+  plugins: [vue(), vueJsx()],
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src')
@@ -16,4 +16,4 @@ export default defineConfig({
     host: '0.0.0.0',
     open: true
   }
-}) 
+});
