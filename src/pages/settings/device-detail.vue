@@ -34,7 +34,6 @@ const device = ref({
 })
 
 const handleDisconnect = () => {
-  // 这里添加断开连接的逻辑
   router.back()
 }
 </script>

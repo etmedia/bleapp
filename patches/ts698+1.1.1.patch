@@ -1,13 +1,13 @@
-diff --git a/node_modules/ts698/dl698/DataUtils.ts b/node_modules/ts698/dl698/DataUtils.ts
-index 0a1b083..e919420 100644
---- a/node_modules/ts698/dl698/DataUtils.ts
-+++ b/node_modules/ts698/dl698/DataUtils.ts
-@@ -171,7 +171,7 @@ export class DataUtils {
-         let length = str.length;
-         let data = Buffer.alloc(length / 2);
-         for (let i = 0; i < length; i += 2) {
--            let firstCharacter = DataUtils.digit(str.charAt(0).charCodeAt(0), 16);
-+            let firstCharacter = DataUtils.digit(str.charAt(i).charCodeAt(0), 16);
-             let secondCharacter = DataUtils.digit(str.charAt(i + 1).charCodeAt(0), 16);
+diff --git a/node_modules/ts698/dl698/DataUtils.js b/node_modules/ts698/dl698/DataUtils.js
+index a79e0a0..7bc1b61 100644
+--- a/node_modules/ts698/dl698/DataUtils.js
++++ b/node_modules/ts698/dl698/DataUtils.js
+@@ -163,7 +163,7 @@ var DataUtils = /** @class */ (function () {
+         var length = str.length;
+         var data = buffer_1.Buffer.alloc(length / 2);
+         for (var i = 0; i < length; i += 2) {
+-            var firstCharacter = DataUtils.digit(str.charAt(0).charCodeAt(0), 16);
++            var firstCharacter = DataUtils.digit(str.charAt(i).charCodeAt(0), 16);
+             var secondCharacter = DataUtils.digit(str.charAt(i + 1).charCodeAt(0), 16);
              if ((firstCharacter == -1) || (secondCharacter == -1)) {
                  throw new Error("string is not a legal hex string.");

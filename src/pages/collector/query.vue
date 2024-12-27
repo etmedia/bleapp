@@ -71,7 +71,7 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const handleQuery = (type) => {
+const handleQuery = (type: string) => {
   router.push(`/collector/query/${type}`)
 }
 </script>

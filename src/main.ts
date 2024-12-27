@@ -6,4 +6,4 @@ import { globalObject } from './global'
 const app = createApp(App)
 app.provide('globalObject', globalObject);
 app.use(router)
-app.mount('#app') 
+app.mount('#app')

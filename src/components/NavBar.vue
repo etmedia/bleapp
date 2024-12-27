@@ -39,7 +39,12 @@ const showBackButton = computed(() => {
 })
 
 const handleBack = () => {
-  router.back()
+  if (route.path === '/settings') {
+    router.push('/')
+  } else
+  {
+    router.back()
+  }
 }
 
 const isSubPage = computed(() => {

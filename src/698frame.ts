@@ -141,6 +141,23 @@ function parser_GetTermTime(framedata : string) : string {
     return retData
 }
 
+function hexStringToVisibleString(hexString: string): string {
+    // 检查输入是否为有效的十六进制字符串
+    if (!/^[\da-fA-F]+$/.test(hexString) || hexString.length % 2 !== 0) {
+        throw new Error("Invalid hex string");
+    }
+
+    let visibleString = '';
+    for (let i = 0; i < hexString.length; i += 2) {
+        // 将每两个字符的十六进制值转换为十进制
+        const hexPair = hexString.substr(i, 2);
+        const charCode = parseInt(hexPair, 16);
+        // 将十进制值转换为对应的字符
+        visibleString += String.fromCharCode(charCode);
+    }
+    return visibleString;
+}
+
 function parser_GetVersion(framedata : string) : string {
     let retData : string = '解析异常'
     Ts698.parse({
@@ -150,9 +167,15 @@ function parser_GetVersion(framedata : string) : string {
             var jsonObject = JSON.parse(res.msg.toString());
             if(jsonObject.resultCode == 0)
             {
-                if(jsonObject.result)
+                if(jsonObject.result && jsonObject.result.structure && Array.isArray(jsonObject.result.structure) && jsonObject.result.structure.length == 6)
                 {
-                    retData = JSON.stringify(jsonObject.result, null, 2)
+                    retData = ''
+                    retData += "厂商代码：" + hexStringToVisibleString(jsonObject.result.structure[0].visible_string) + "\n"
+                    retData += "软件版本号：" + hexStringToVisibleString(jsonObject.result.structure[1].visible_string) + "\n"
+                    retData += "软件版本日期：" + hexStringToVisibleString(jsonObject.result.structure[2].visible_string) + "\n"
+                    retData += "硬件版本号：" + hexStringToVisibleString(jsonObject.result.structure[3].visible_string) + "\n"
+                    retData += "硬件版本日期：" + hexStringToVisibleString(jsonObject.result.structure[4].visible_string) + "\n"
+                    retData += "厂商扩展信息：" + hexStringToVisibleString(jsonObject.result.structure[5].visible_string)
                 }
             }                    
         }

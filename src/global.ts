@@ -58,6 +58,7 @@ export const globalObject = {
     pendingTimeoutMessage: 0, // if we don't get a response in time, we should show an error message
     returnData: ref(''), // data returned from the device
     termaddress: ref(''),
+    errorInfo: ref(''),
     handleData: null as Callback | null,
 
     handleRxdNotifications: (event: Event) => {
@@ -87,10 +88,10 @@ export const globalObject = {
     
 
     handleBluetoothError: (error: unknown) => {
-        if (!error) throw error;
-
-        const e = error.toString();
-        console.log(`Bluetooth error: ${e}`);
+        if (!error) throw error
+        const e = error.toString()
+        console.log(`Bluetooth error: ${e}`)
+        alert(`error: ${e}`)
     },
 
     start: async function() {
@@ -119,9 +120,14 @@ export const globalObject = {
     },
 
     stop:  async function() {
-        if (this.bluetoothDevice) 
-        {
-            this.bluetoothDevice.gatt!.disconnect()
+        try {
+            if (this.bluetoothDevice)
+            {
+                this.bluetoothDevice.gatt!.disconnect()
+            }
+        } catch (error) {
+            this.isStarted.value = false;
+            this.handleBluetoothError(error);
         }
         this.isStarted.value = false
         this.connectedDeviceName.value = ''
@@ -132,10 +138,15 @@ export const globalObject = {
     send: async function(payload: Uint8Array, callback: Callback) {
         this.handleData = callback
         globalObject.returnData.value = ''
-        if (this.Characteristic) {
-            await this.Characteristic.writeValue(payload)
-            console.log("send", payload)
-        }
+        try {
+            if (this.Characteristic) {
+                await this.Characteristic.writeValue(payload)
+                console.log("send", payload)
+            }
+        } catch (error) {
+            this.isStarted.value = false;
+            this.handleBluetoothError(error);
+        }   
     },
 
     updateUi: (status: string) => {
