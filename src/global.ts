@@ -52,6 +52,7 @@ export function getErrorMessage(error: unknown) {
 export const globalObject = {
     bluetoothDevice: null as BluetoothDevice | null,
     Characteristic: null as BluetoothRemoteGATTCharacteristic | null,
+    CharacteristicRx: null as BluetoothRemoteGATTCharacteristic | null,
     connectedDeviceName: ref(''),
     isStarted: ref(false),
     pendingStartEpilogue: 0, // workaround for determining new firmware, see handleRxdNotifications
@@ -99,16 +100,33 @@ export const globalObject = {
             this.bluetoothDevice = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
                 // https://github.com/WebBluetoothCG/web-bluetooth/issues/234
-                optionalServices: [window.navigator.userAgent.match(/Bluefy/) ? "generic_access" : 0xFFE0], // workaround for Bluefy
+                optionalServices: ['6e400001-b5a3-f393-e0a9-e50e24dc4179', window.navigator.userAgent.match(/Bluefy/) ? "generic_access" : 0xFFE0], // workaround for Bluefy
             })
             console.log(this.bluetoothDevice)            
             const server = await this.bluetoothDevice.gatt!.connect()
             console.log(server)
-            const service = await server.getPrimaryService(0xFFE0)
-            this.Characteristic = await service.getCharacteristic(0xFFE1)
-            console.log(this.Characteristic)        
-            this.Characteristic.startNotifications()
-            this.Characteristic.addEventListener("characteristicvaluechanged", this.handleRxdNotifications)
+            const services = await server.getPrimaryServices();
+            if(services.length == 0){
+                throw new Error('No services found')
+            }
+            const service = services[0]
+            const Characteristics = await service.getCharacteristics()
+            if(Characteristics.length == 0)
+            {
+                throw new Error('No characteristics found')
+            }
+            if(Characteristics.length == 1)
+            {
+                this.Characteristic = Characteristics[0]
+                this.CharacteristicRx = Characteristics[0]
+            }
+            else
+            {
+                this.Characteristic = Characteristics[0]
+                this.CharacteristicRx = Characteristics[1]
+            }
+            await this.CharacteristicRx.startNotifications()
+            this.CharacteristicRx.addEventListener("characteristicvaluechanged", this.handleRxdNotifications)
             this.isStarted.value = true
             this.connectedDeviceName.value = this.bluetoothDevice.name!
             console.log(this.isStarted)
