@@ -1,0 +1,1 @@
+import{d as t,c as s,a as o,o as n,_ as a}from"./index-BGmz_ESw.js";const _={class:"init"},c=t({__name:"init",setup(i){return(r,e)=>(n(),s("div",_,e[0]||(e[0]=[o("h3",null,"初始化",-1)])))}}),p=a(c,[["__scopeId","data-v-77b078de"]]);export{p as default};
