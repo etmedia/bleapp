@@ -91,8 +91,14 @@ export const globalObject = {
     handleBluetoothError: (error: unknown) => {
         if (!error) throw error
         const e = error.toString()
-        console.log(`Bluetooth error: ${e}`)
-        alert(`error: ${e}`)
+        if(e === "NotFoundError: User cancelled the requestDevice() chooser.")
+        {
+            console.log(`Bluetooth error: ${e}`)
+        }
+        else
+        {
+            alert(`error: ${e}`)
+        }
     },
 
     start: async function() {

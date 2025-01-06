@@ -2,6 +2,13 @@
   <div class="query-detail">
     <div class="page-title">{{ pageTitle }} {{ global.termaddress }}</div>
     <div class="content-box">
+        <div v-if="showParamInput" class="input-area">
+            <input 
+            v-model="queryParam" 
+            class="param-input"
+            placeholder="请输入查询参数"
+            />
+        </div>    
       <div class="result-area">
         <textarea 
           v-model="queryResult" 
@@ -17,8 +24,7 @@
           {{ message }}
         </div>
         <button class="query-btn" @click="handleQuery" :disabled="!isStarted">查询</button>
-      </div>
-      
+      </div>      
       <div class="log-section">
         <div class="log-header">
           <span>日志信息</span>
@@ -42,7 +48,7 @@
 import { ref, computed, onMounted, watch, nextTick, inject } from 'vue'
 import { useRoute } from 'vue-router'
 import { globalObject, Callback, getErrorMessage, makePayload } from '@/global'
-import { buildFrame, parseFrame }  from '@/698frame'
+import { createFrameHandler }  from '@/FrameHandlerFactory'
 
 const global = inject<typeof globalObject>('globalObject', globalObject)
 
@@ -53,27 +59,29 @@ const logs = ref('')
 const resultTextarea = ref<HTMLTextAreaElement | null>(null);
 const message = ref('')
 const hasError = ref(false)
+const queryParam = ref(''); // 新增的参数输入框绑定的变量
+const showParamInput = ref(false); // 控制参数输入区显示和隐藏的变量
 
 const pageTitle = computed(() => {
     switch (route.params.type) {
         case 'address':
-        return '查询终端地址'
+            return '查询终端地址'
         case 'ip':
-        return '查询终端IP'
+            return '查询终端IP'
         case 'ethernetMaster':
-        return '查询以太网主站参数'
+            return '查询以太网主站参数'
         case 'ethernetComm':
-        return '查询以太网通信设置'
+            return '查询以太网通信设置'
         case 'gprsMaster':
-        return '查询GPRS主站参数'
+            return '查询GPRS主站参数'
         case 'gprsComm':
-        return '查询GPRS通信参数'
+            return '查询GPRS通信参数'
         case 'time':
-        return '查询终端时间'
+            return '查询终端时间'
         case 'version':
-        return '查询终端版本信息'
+            return '查询终端版本信息'
         case 'mac':
-        return '查询终端MAC地址'
+            return '查询终端MAC地址'
         default:
         return '查询'
     }
@@ -92,7 +100,8 @@ const callback: Callback = (err, result) => {
         const timestamp = new Date().toLocaleTimeString()
         logs.value = `[${timestamp}] RX:`+ result + '\n' + logs.value
         const action = Array.isArray(route.params.type) ? route.params.type[0] : route.params.type;
-        let ret = parseFrame(action, result)
+        const handler = createFrameHandler(action);
+        let ret = handler.parseFrame(result);
         if(action == 'address')
         {
             global.termaddress.value = ret.valueOf()
@@ -106,16 +115,18 @@ const handleQuery = () => {
     if(action !== 'address' && global.termaddress.value === '')
     {
         message.value = '请先查询终端地址'
+        hasError.value = true
         return
     }
     const timestamp = new Date().toLocaleTimeString()
     try {
         queryResult.value = ''
         // const cmdstr = "68 17 00 43 45 AA AA AA AA AA AA 00 5B 4F 05 01 05 40 01 02 00 00 6A 17 16"
-        const cmd = buildFrame(action, global.termaddress.value)
-        // 模拟查询操作
-        global.send(makePayload(cmd), callback)
-        logs.value = `[${timestamp}] TX:`+ cmd + '\n' + logs.value
+        // const cmd = buildFrame(action, global.termaddress.value)
+        const handler = createFrameHandler(action);
+        const frame = handler.buildFrame(null);
+        global.send(makePayload(frame), callback)
+        logs.value = `[${timestamp}] TX:`+ frame + '\n' + logs.value
         message.value = ''
         hasError.value = false
     } catch (error) {
@@ -177,6 +188,29 @@ onMounted(() => {
   padding: 15px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   overflow-y: auto;
+}
+
+.input-area {
+    margin-bottom: 15px;
+}
+
+.param-input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  padding: 10px 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  resize: none;
+  background-color: #f5f7fa;
+  color: #606266;
+  overflow: hidden;
+  display: block; /* 确保块级显示 */
+  box-sizing: border-box; /* 确保padding不会影响总宽度 */
+  word-wrap: break-word; /* 确保长文本会换行 */
+  white-space: pre-wrap; /* 保留换行和空格，但允许自动换行 */
 }
 
 .result-area {
