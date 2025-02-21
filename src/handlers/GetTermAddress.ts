@@ -11,6 +11,7 @@ export class GetTermAddress extends BaseFrameHandler {
         {
             time_tag: false,//时间标签，true代表有时间标签，false代表没有
             request_mode: 5,//请求类型，5代表Get-Request
+            isBroadCast: true,
             request: {
                 index: 1 ,//1代表GetRequestNormal数据类型
                 get_option: {
