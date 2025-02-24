@@ -39,6 +39,9 @@
           ></textarea>
         </div>
       </div>
+      <div v-if="isLoading" class="loading-overlay">
+        <div class="loading-spinner"></div>
+      </div>
     </div>
   </div>
   
@@ -51,6 +54,8 @@ import { globalObject, Callback, getErrorMessage, makePayload } from '@/global'
 import { createFrameHandler }  from '@/FrameHandlerFactory'
 
 const global = inject<typeof globalObject>('globalObject', globalObject)
+
+const isLoading = ref(false);
 
 const isStarted = ref(global.isStarted)
 const route = useRoute()
@@ -88,6 +93,7 @@ const pageTitle = computed(() => {
 })
 
 const callback: Callback = (err, result) => {
+    isLoading.value = false; // 结束加载
     if (err)
     {
         console.error(getErrorMessage(err))
@@ -119,12 +125,13 @@ const handleQuery = () => {
         return
     }
     const timestamp = new Date().toLocaleTimeString()
+    isLoading.value = true;// 开始加载
     try {
         queryResult.value = ''
         // const cmdstr = "68 17 00 43 45 AA AA AA AA AA AA 00 5B 4F 05 01 05 40 01 02 00 00 6A 17 16"
         // const cmd = buildFrame(action, global.termaddress.value)
         const handler = createFrameHandler(action);
-        const frame = handler.buildFrame(null);
+        const frame = handler.buildFrame(global.termaddress.value);
         global.send(makePayload(frame), callback)
         logs.value = `[${timestamp}] TX:`+ frame + '\n' + logs.value
         message.value = ''
@@ -133,14 +140,15 @@ const handleQuery = () => {
         message.value = '发送查询失败：' + getErrorMessage(error)
         hasError.value = true
         logs.value = `[${timestamp}] 发送查询失败: ${getErrorMessage(error)}\n` + logs.value
+        isLoading.value = false; // 结束加载
     }
 }
 
 const clearLogs = () => {
-  logs.value = ''
-  queryResult.value = ''
-  message.value = ''
-  hasError.value = false
+    logs.value = ''
+    queryResult.value = ''
+    message.value = ''
+    hasError.value = false
 }
 
 // 改进自动调整文本框高度的函数
@@ -325,5 +333,32 @@ onMounted(() => {
   line-height: 1.5;
   color: #606266;
   background: none;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.loading-spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #409EFF;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style> 

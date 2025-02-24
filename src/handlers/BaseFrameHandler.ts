@@ -10,6 +10,8 @@ export abstract class BaseFrameHandler implements FrameHandler {
 
     buildFrame_option(linkoption: any, requestoption: any): string {
         let framedata : string = ''
+        console.log(linkoption)
+        console.log(requestoption)
         Ts698.buildFrame({
             link_option: linkoption,
             request_option: requestoption,
@@ -34,13 +36,13 @@ export abstract class BaseFrameHandler implements FrameHandler {
         Ts698.parse({
             frame: response,
             result(res){
-                console.log(res.msg);
+                // console.log(res.msg);
                 var jsonObject = JSON.parse(res.msg.toString());
                 if(jsonObject.resultCode == 0)
                 {
                     if(jsonObject.result)
                     {
-                    result = jsonObject.result
+                        result = jsonObject.result
                     }
                 }
             }
