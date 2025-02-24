@@ -71,21 +71,21 @@ const pageTitle = computed(() => {
     switch (route.params.type) {
         case 'address':
             return '查询终端地址'
-        case 'ip':
+        case 'ipaddress':
             return '查询终端IP'
-        case 'ethernetMaster':
+        case 'termethcom':
             return '查询以太网主站参数'
-        case 'ethernetComm':
+        case 'termethcomsetup':
             return '查询以太网通信设置'
-        case 'gprsMaster':
+        case 'termgprscom':
             return '查询GPRS主站参数'
-        case 'gprsComm':
+        case 'termgprscomsetup':
             return '查询GPRS通信参数'
-        case 'time':
+        case 'termdatetime':
             return '查询终端时间'
         case 'version':
             return '查询终端版本信息'
-        case 'mac':
+        case 'termmac':
             return '查询终端MAC地址'
         default:
         return '查询'
